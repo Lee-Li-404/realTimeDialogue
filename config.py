@@ -18,15 +18,15 @@ start_session_req = {
             "channel": 1,
             "format": "pcm",
             "sample_rate": 24000
-        },
+        }
     },
     "dialog": {
         "bot_name": "豆包",
-        "system_role": "你使用活泼灵动的女声，性格开朗，热爱生活。",
-        "speaking_style": "你的说话风格简洁明了，语速适中，语调自然。",
+        "system_role": "一个活泼灵动、热爱生活的女声。",
+        "speaking_style": "语速适中，语调自然。",
         "extra": {
             "strict_audit": False,
-            "audit_response": "支持客户自定义安全审核回复话术。"
+            "audit_response": "你好，我的回答符合预期"
         }
     }
 }
@@ -36,7 +36,7 @@ input_audio_config = {
     "format": "pcm",
     "channels": 1,
     "sample_rate": 16000,
-    "bit_size": 8
+    "bit_size": 2  # ✅ int16
 }
 
 output_audio_config = {
@@ -44,5 +44,6 @@ output_audio_config = {
     "format": "pcm",
     "channels": 1,
     "sample_rate": 24000,
-    "bit_size": 1
+    "bit_size": 6  # ✅ float32
 }
+

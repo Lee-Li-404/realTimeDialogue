@@ -37,7 +37,7 @@ input_audio_config = {
     "format": "pcm",
     "channels": 1,
     "sample_rate": 16000,
-    "bit_size": pyaudio.paInt16
+    "bit_size": 8
 }
 
 output_audio_config = {
@@ -45,5 +45,5 @@ output_audio_config = {
     "format": "pcm",
     "channels": 1,
     "sample_rate": 24000,
-    "bit_size": pyaudio.paFloat32
+    "bit_size": 1
 }

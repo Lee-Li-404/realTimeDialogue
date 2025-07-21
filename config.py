@@ -1,5 +1,4 @@
 import uuid
-import pyaudio
 
 # 配置信息
 ws_connect_config = {

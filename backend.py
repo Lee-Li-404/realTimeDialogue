@@ -95,12 +95,13 @@ async def start_dialog():
     print("✅ audio_callback 被设置！")
 
     print("🚀 开始连接并启动 session...")
-    await session.start()
-    print("✅ 启动完毕")
-    # await asyncio.sleep(4)
-
+    await asyncio.sleep(4)
     occupied = True
     print("✅ occupied 启动完毕")
+
+    await session.start()
+    print("✅ 启动完毕")
+
 
 
     return {"status": "started"}

@@ -83,7 +83,7 @@ def root():
 async def start_dialog():
     global occupied
     global session
-    occupied = true
+    occupied = True
     if session is not None:
         return {"status": "already_running"}
 
@@ -103,7 +103,7 @@ async def start_dialog():
 async def stop_dialog():
     global occupied
     global session
-    occupied = false
+    occupied = False
     if session:
         session.is_running = False
         session = None

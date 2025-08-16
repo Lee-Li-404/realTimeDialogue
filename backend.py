@@ -8,7 +8,7 @@ from typing import Optional
 
 import config
 
-occupied = false
+occupied = False
 
 app = FastAPI()
 

@@ -7,14 +7,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 
 import config
-# === 全局变量（新增） ===
-current_audio_ws: Optional[WebSocket] = None  # 当前唯一占用的 audio WebSocket
-latest_event_id: Optional[int] = None
-latest_asr_text: str = ""
 
+occupied = false
 
 app = FastAPI()
 
+# === 全局变量 ===
+session: Optional[DialogSession] = None
+current_ws_connection: Optional[WebSocket] = None
+latest_event_id: Optional[int] = None
+latest_asr_text: str = ""
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,33 +29,19 @@ app.add_middleware(
 @app.websocket("/ws/audio")
 async def websocket_audio_stream(websocket: WebSocket):
     await websocket.accept()
-    global session, current_audio_ws
-    print("✅ /ws/audio 有连入请求")
+    global session
+    print("✅ /ws/audio 已连接")
 
     if session is None:
-        await websocket.close(code=1008, reason="Session not started")
+        await websocket.close()
         return
-
-    # 若已有占用者 → 拒绝。1013 表示“稍后再试”
-    if current_audio_ws is not None:
-        print("🚫 /ws/audio 已被占用，拒绝新的连接")
-        await websocket.close(code=1013, reason="busy")
-        return
-
-    # 成为唯一占用者
-    current_audio_ws = websocket
-    print("👑 /ws/audio 占位成功")
 
     try:
         while True:
             audio_bytes = await websocket.receive_bytes()
             session.feed_audio(audio_bytes)
     except WebSocketDisconnect:
-        print("🔌 /ws/audio 断开")
-    finally:
-        if current_audio_ws is websocket:
-            current_audio_ws = None
-            print("🧹 释放占位")
+        print("🔌 音频 WebSocket 断开连接")
 
 
 tts_clients = set()
@@ -93,7 +81,9 @@ def root():
 
 @app.post("/start")
 async def start_dialog():
+    global occupied
     global session
+    occupied = true
     if session is not None:
         return {"status": "already_running"}
 
@@ -111,11 +101,12 @@ async def start_dialog():
 
 @app.post("/stop")
 async def stop_dialog():
-    global session, current_audio_ws
+    global occupied
+    global session
+    occupied = false
     if session:
         session.is_running = False
         session = None
-        current_audio_ws = None   # ✨ 确保释放占用
         return {"status": "stopped"}
     return {"status": "not_running"}
 
@@ -134,9 +125,9 @@ def update_status(event_id=None, text=None):
 
 @app.get("/availability")
 def availability():
-    # 供前端探测是否已被占用
-    return {"occupied": current_audio_ws is not None}
+    """前端检查是否占用"""
+    return {"occupied": occupied}
 
+    
 if __name__ == "__main__":
     uvicorn.run("backend:app", host="0.0.0.0", port=8000)
-

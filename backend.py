@@ -83,7 +83,6 @@ def root():
 async def start_dialog():
     global occupied
     global session
-    occupied = True
     if session is not None:
         return {"status": "already_running"}
 
@@ -95,6 +94,9 @@ async def start_dialog():
 
     await session.start()
     print("✅ 启动完毕")
+    await asyncio.sleep(4)
+
+    occupied = True
 
     return {"status": "started"}
 
